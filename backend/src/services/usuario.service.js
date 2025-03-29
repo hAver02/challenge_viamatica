@@ -16,6 +16,7 @@ class UsuarioService {
             throw error
         }
     }
+
     findUserByUsernameOrEmail = async (username, email) => {
         try {
             const user = await this.dao.findUserByUsernameOrEmail(username,email)
@@ -25,6 +26,7 @@ class UsuarioService {
             throw error
         }
     }
+
     updateFailedAttemps = async (id, number) => {
         try {
             if(number < 0 || number > 3) throw new CustomError("Error updating failed attemps", 400)
@@ -33,6 +35,7 @@ class UsuarioService {
             throw error
         }
     }
+
     updateStatus = async (id, newStatus) => {
         try {
             return await this.dao.updateStatus(id, newStatus)            
@@ -49,10 +52,9 @@ class UsuarioService {
         }
     }
 
-
     getById = async (id) => {
         try{
-            const rta =  await this.dao.getByid(id)
+            const rta =  await this.dao.getById(id)
             if(!rta){ 
                 throw new CustomError("Product not found", 404);
             }
@@ -62,7 +64,6 @@ class UsuarioService {
             
         }
     }
-
 
     create = async (product) => {
         try{
@@ -74,7 +75,6 @@ class UsuarioService {
         }
     }
 
-
     update = async (id, product) => {
         try{
             const rta =  await this.dao.update(id,product)
@@ -85,7 +85,6 @@ class UsuarioService {
             throw error;
         }
     }
-
 
     delete = async (id) => {
         try{

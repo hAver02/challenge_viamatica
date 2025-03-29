@@ -1,12 +1,15 @@
 import { personaDao } from "../dao/collections/persona.dao.js";
+import { sessionDao } from "../dao/collections/session.dao.js";
 import { usuarioDao } from "../dao/collections/usuario.dao.js";
 import CustomError from "../utils/custom.error.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken"
 
 class AuthService {
-    constructor(userDao, personaDao){
+    constructor(userDao, personaDao, sessionDao){
         this.userDao = userDao;
         this.personaDao = personaDao;
+        this.sessionDao = sessionDao;
     }
 
     register = async (personaData, usuarioData) => {
@@ -43,6 +46,80 @@ class AuthService {
             return usuario;
 
     }
+    login = async ({username, email, password }) => {
+        try {
+                let usuario = await this.userDao.findUserByUsernameOrEmail(username,email)
+                console.log("usuario1", usuario);
+                
+                if(!usuario) throw new CustomError("User not found", 400)
+            
+                if(usuario.status == "blocked") throw new CustomError("Blocked user", 403);
+
+                // sessiones que sean de este usuario y que en el end este en null
+                const currentTime = new Date();
+                const cookieExpirationTime = 3600000
+                const sessiones = await this.sessionDao.getSessionByUserIdAndWithEndNull(usuario._id);
+
+                for(let session of sessiones){
+                    const sessionDuration = currentTime - session.sessionStart;
+                    if(sessionDuration > cookieExpirationTime){
+                        await this.sessionDao.setSessionEnd(session._id);
+                        usuario = await this.userDao.updateSession(usuario._id, false)
+                    }
+                }
+
+                if(usuario.sessionActive) throw new CustomError("Already have one active session", 400)
+                        
+                 const isValidPassword = await bcrypt.compare(password, usuario.password) 
+            
+                if(!isValidPassword) {
+                    usuario = await this.userDao.updateFailedAttemps(usuario._id, usuario.failedAttemps);
+                    throw new CustomError("Invalid password" , 401)
+                }
+            
+                if(usuario.failedAttemps >=3) {
+                    await this.userDao.updateStatus(usuario._id, 'blocked');
+                    throw new CustomError("Your account has been blocked" , 403)
+                }
+            
+            
+                await this.userDao.updateSession(usuario._id, true);
+                
+                const session = await this.sessionDao.create({userId : usuario._id});
+        
+                return {usuario, session};
+                } catch (error) {
+                    throw error;
+                }
+    }
+    logout = async (token) => {
+        try {
+            // console.log(token, process.env.JWT_SECRET);
+            
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            // console.log("decoded", decoded);
+            await this.userDao.updateSession(decoded.userId, false);
+            
+            await this.sessionDao.setSessionEnd(decoded.sessionId);
+
+        } catch (error) {
+            // console.log(error);
+            
+            throw error;
+        }
+    }
+    getUserById = async (id) => {
+        try {
+            const user = await this.userDao.getById(id)
+            console.log("user", user);
+            if(!user) throw new CustomError("User not found", 404)
+                return user;
+            
+        } catch (error) {
+            throw error
+        }
+    }
+    
 }
 
-export const authService = new AuthService(usuarioDao, personaDao)
+export const authService = new AuthService(usuarioDao, personaDao, sessionDao)

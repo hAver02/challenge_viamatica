@@ -7,7 +7,7 @@ class SessionController {
     }
     getAll = async(req, res) => {
         try {
-            const sessiones = this.service.getAll();
+            const sessiones = await this.service.getAll();
             return res.json({ ok : true, sessiones})
         } catch (error) {
             console.log(error);
@@ -20,8 +20,7 @@ class SessionController {
         const {userId} = req.params;
         console.log("userId", userId);
         try {
-            const sessions = this.service.getByUserId(userId);
-            console.log("sessions ", sessions);
+            const sessions = await this.service.getByUserId(userId);
             return res.json({ ok : true , sessions })
         } catch (error) {
             next(error)
