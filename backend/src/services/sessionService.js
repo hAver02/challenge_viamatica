@@ -21,6 +21,14 @@ class SessionService{
             throw new Error(error.message)
         }
     }
+
+    getByUserId = async (userId) => {
+        try {
+            return this.sessionDao.getByUserId(userId);
+        } catch (error) {
+            throw new Error("Error getting sessions!")
+        }
+    }
     
 } 
 

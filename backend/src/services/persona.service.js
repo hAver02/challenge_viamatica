@@ -20,7 +20,7 @@ class PersonaService {
 
     getById = async (id) => {
         try{
-            const rta =  await this.dao.getByid(id)
+            const rta = await this.dao.getById(id)
             if(!rta){ 
                 throw new CustomError("Product not found", 404);
             }
@@ -43,13 +43,16 @@ class PersonaService {
     }
 
 
-    update = async (id, product) => {
+    update = async (id, persona) => {
         try{
-            const rta =  await this.dao.update(id,product)
+            const rta =  await this.dao.update(id,persona)
+            console.log("rta", rta);
             if(!rta){ 
                 throw new CustomError("Product not found", 404);
             }
+            return rta
         }catch(error){
+            
             throw error;
         }
     }

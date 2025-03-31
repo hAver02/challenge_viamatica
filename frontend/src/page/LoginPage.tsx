@@ -16,25 +16,19 @@ export default function LoginPage(){
     const handleSubmit = async (event:any) => {
         event.preventDefault();
 
-        console.log({event});
-        console.log(email, password);
-                
         const rta = await signin({email,password})
-        // console.log("infoUser", info user);
         console.log("dta", rta);
-        
         if(rta.data.ok) return navigate('/')
         setError(rta.data.message)
-        
     }
     return(
-        <div className='h-full flex flex-col items-center mt-12 gap-5'>
+        <div className='h-full flex flex-col items-center gap-5 bg-gradient-to-bl from-neutral-200 to-neutral-400 p-5 rounded-xl'>
 			<h1 className='text-4xl font-bold capitalize'>
 				Iniciar sesión
 			</h1>
 
 			<p className='text-sm font-medium'>
-				¡Que bueno tenerte de vuelta!
+				Que bueno tenerte de vuelta
 			</p>
 
 			{

@@ -28,8 +28,7 @@ export function AuthProvider({children} : any){
         const rta = await registerReq({usuario, persona})
         
         if(!rta.data.ok) return false
-        // setUser(rta.data.user)
-        // setIsAuth(true)
+
         return rta
     }
 
@@ -60,7 +59,6 @@ export function AuthProvider({children} : any){
             
             if(!authToken) return setIsAuth(false)
             const rta = await verify()
-            console.log(rta);
             
             if(rta.data.ok && rta.data.usuario){
                 setIsAuth(true)

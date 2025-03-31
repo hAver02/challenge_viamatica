@@ -82,6 +82,8 @@ class UsuarioService {
                 throw new CustomError("Product not found", 404);
             }
         }catch(error){
+            console.log(error);
+            
             throw error;
         }
     }

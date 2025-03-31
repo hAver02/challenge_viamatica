@@ -15,6 +15,29 @@ class PersonaController{
             throw error
         }
     }
+    updatePersona = async (req, res, next) => {
+        const persona = req.body
+        const {id} = req.params
+        console.log(persona);
+        
+        try {
+            const newPersona = this.service.update(id, persona)
+            return res.json({ ok : true, persona : newPersona})
+        } catch (error) {
+            next(error)
+        }
+    }
+
+
+    getById = async (req, res, next) => {
+        const { id } = req.params
+        try {
+            const persona = await this.service.getById(id);
+            res.json({ ok : true, persona})
+        } catch (error) {
+            next(error)
+        }
+    }
 
 }
 

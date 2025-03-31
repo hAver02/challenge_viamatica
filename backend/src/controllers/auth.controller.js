@@ -8,13 +8,13 @@ class AuthController{
 
     login = async (req, res, next) => {
         try {
-            console.log("hola login");
+       
             
             const { username, email, password} = req.body
             
             const {usuario, session} = await this.authService.login({username, email, password})
             
-            const token = jwt.sign({userId : usuario._id, role : usuario.role, sessionId : session._id}, process.env.JWT_SECRET , {expiresIn : "24h"})
+            const token = jwt.sign({userId : usuario._id, role : usuario.role, sessionId : session._id}, process.env.JWT_SECRET , {expiresIn : "1h"})
 
             res.cookie("authToken", token, {
                 maxAge : 3600000
@@ -22,6 +22,7 @@ class AuthController{
 
             res.json({ ok : true, message: "logged succesfully!"})
         } catch (error) {
+            
             next(error)
         }
     }
@@ -42,7 +43,7 @@ class AuthController{
         
         try {
                     const { persona, usuario } = req.body;
-                    console.log({persona,usuario});
+                    // console.log({persona,usuario});
                     if(!persona || !usuario) return res.json({ ok : false, message : "Not info sent"})
                     
                     const newUser = await authService.register(persona, usuario );
@@ -65,8 +66,8 @@ class AuthController{
             try {
             
                 const usuario =await this.authService.getUserById(user.userId)
-                console.log(usuario);
-                delete usuario.password
+       
+                
 
                 res.status(200).json({ok : true, usuario })
             } catch (error) {

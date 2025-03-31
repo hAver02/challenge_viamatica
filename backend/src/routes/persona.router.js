@@ -4,5 +4,6 @@ const personaRouter = Router();
 
 
 personaRouter.get("/", personaController.getAll)
-
+personaRouter.put("/:id", personaController.updatePersona)
+personaRouter.get("/:id", personaController.getById)
 export default personaRouter

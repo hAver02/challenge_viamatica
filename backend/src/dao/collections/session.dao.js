@@ -15,6 +15,9 @@ class SessionDao extends MongoDao{
     getSessionByUserIdAndWithEndNull = async (userId) => {
         return await this.model.find({$and : [{userId : userId}, {sessionEnd : null}]})
     }
+    getByUserId = async(userId) => {
+        return this.model.find({userId});
+    }
 }
 
 

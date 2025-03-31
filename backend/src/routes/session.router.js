@@ -5,6 +5,6 @@ const sessionRouter = Router()
 
 
 sessionRouter.get("/", sessionController.getAll);
-sessionRouter.get("/:userId}", sessionController.getByUserId);
+sessionRouter.get("/:userId", sessionController.getByUserId);
 
 export default sessionRouter

@@ -2,6 +2,7 @@
 import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 
 export default function RegisterPage(){
@@ -155,6 +156,13 @@ export default function RegisterPage(){
             </button>
           </div>
         </form>
+
+					<p className='text-sm text-stone-800'>
+						¿Ya tienes una cuenta?
+						<Link to='/login' className='underline ml-2'>
+							Login
+						</Link>
+					</p>
       </div>
     );
   

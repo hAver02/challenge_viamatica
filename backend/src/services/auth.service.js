@@ -1,3 +1,4 @@
+import { intentosFallidosDao } from "../dao/collections/intentosfallidos.dao.js";
 import { personaDao } from "../dao/collections/persona.dao.js";
 import { sessionDao } from "../dao/collections/session.dao.js";
 import { usuarioDao } from "../dao/collections/usuario.dao.js";
@@ -6,10 +7,11 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken"
 
 class AuthService {
-    constructor(userDao, personaDao, sessionDao){
+    constructor(userDao, personaDao, sessionDao, failedDao){
         this.userDao = userDao;
         this.personaDao = personaDao;
         this.sessionDao = sessionDao;
+        this.failedDao = failedDao
     }
 
     register = async (personaData, usuarioData) => {
@@ -49,9 +51,8 @@ class AuthService {
     login = async ({username, email, password }) => {
         try {
                 let usuario = await this.userDao.findUserByUsernameOrEmail(username,email)
-                console.log("usuario1", usuario);
                 
-                if(!usuario) throw new CustomError("User not found", 400)
+                if(!usuario) throw new CustomError("User not found", 404)
             
                 if(usuario.status == "blocked") throw new CustomError("Blocked user", 403);
 
@@ -71,8 +72,10 @@ class AuthService {
                 if(usuario.sessionActive) throw new CustomError("Already have one active session", 400)
                         
                  const isValidPassword = await bcrypt.compare(password, usuario.password) 
-            
+                console.log("isValid" , isValidPassword);
+                
                 if(!isValidPassword) {
+                    await this.failedDao.create({userId : usuario._id, date : new Date()})
                     usuario = await this.userDao.updateFailedAttemps(usuario._id, usuario.failedAttemps);
                     throw new CustomError("Invalid password" , 401)
                 }
@@ -111,9 +114,13 @@ class AuthService {
     getUserById = async (id) => {
         try {
             const user = await this.userDao.getById(id)
-            console.log("user", user);
-            if(!user) throw new CustomError("User not found", 404)
-                return user;
+            delete user.password
+            const persona = await this.personaDao.getById(user.idPersona)    
+            const usuario = {user, persona}
+            console.log(usuario);
+            
+            if(!user || !persona) throw new CustomError("User not found", 404)
+                return usuario;
             
         } catch (error) {
             throw error
@@ -122,4 +129,4 @@ class AuthService {
     
 }
 
-export const authService = new AuthService(usuarioDao, personaDao, sessionDao)
+export const authService = new AuthService(usuarioDao, personaDao, sessionDao, intentosFallidosDao)

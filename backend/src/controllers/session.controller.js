@@ -18,9 +18,10 @@ class SessionController {
 
     getByUserId = async (req, res, next) => {
         const {userId} = req.params;
-        console.log("userId", userId);
+
         try {
             const sessions = await this.service.getByUserId(userId);
+                    
             return res.json({ ok : true , sessions })
         } catch (error) {
             next(error)

@@ -37,6 +37,8 @@ export default class MongoDao {
         try {
             return await this.model.findByIdAndUpdate(id, body, {new : true});
         } catch (error) {
+            console.log("error", error);
+            
             throw new Error(error)
         }
     }
