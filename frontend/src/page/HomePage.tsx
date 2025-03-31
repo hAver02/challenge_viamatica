@@ -12,8 +12,9 @@ export default function HomePage(){
     const navigate = useNavigate()
     
     const { user, isAuth } = useAuth();
-    if(!isAuth) navigate("/login")
-    const { user : usuario , persona} = user;
+   // const { user : usuario , persona} = user;
+    const [usuario, setUsuario] = useState<any>()
+    const [persona, setPersona] = useState<any>()
     const [select, setSelect] = useState("home");
     const [sessiones, setSessiones] = useState([])
    
@@ -21,18 +22,23 @@ export default function HomePage(){
     useEffect(() => {
       const fetchSessions = async () => {
         try {
-          if(!user || !isAuth || !usuario) return;
+          if(!isAuth || !user) return;
 
-          const response = await getSessionsByUserId(usuario._id);
+          
+          setUsuario(user.user);
+          setPersona(user.persona)
+          const response = await getSessionsByUserId(user.user._id);
           setSessiones(response.data.sessions);
+
         } catch (error) {
           console.error("Error al obtener los datos del usuario", error);
         }
       };
-  
+      if(!isAuth) navigate("/login")
       fetchSessions();
-    }, [user]);
+    }, [user, isAuth]);
 
+  
     
     if (!usuario) {
       return <p className="text-center text-gray-500">Cargando...</p>;

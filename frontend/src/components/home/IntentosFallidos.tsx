@@ -7,16 +7,7 @@ export default function IntentosFallidos({userId} : any){
         const getIF = async () => {
             try {
                 const rta = await getIntentosByUserId(userId)
-                console.log(rta);
-                if(Array.isArray(rta.data.intentosFallidos)){
-                    setIntentosFallidos(rta.data.intentosFallidos)
-                }
-                if(!rta.data.intentosFallidos) return;
-                else{
-                    const array = []
-                    array.push(rta.data.intentosFallidos)
-                    setIntentosFallidos(array);
-                }
+                setIntentosFallidos(rta.data.intentosFallidos)
             } catch (error) {
                 console.log(error);
                 

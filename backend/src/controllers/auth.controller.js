@@ -22,15 +22,18 @@ class AuthController{
 
             res.json({ ok : true, message: "logged succesfully!"})
         } catch (error) {
+            return res.json( { ok : false, message : error.message})
             
             next(error)
         }
     }
 
     logout = async (req, res, next) => {
+   
         try {
             const token = req.cookies.authToken
             if(!token) return res.json({ ok : false, message : "You dont have active session!"});
+            
             await this.authService.logout(token)
             res.clearCookie("authToken")
             res.json({ok : true, message : "Session closed succesfully!"})

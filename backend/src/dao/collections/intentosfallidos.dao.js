@@ -7,7 +7,7 @@ class IntentosFallidos extends MongoDao {
     }
 
     findByUserId = async (id) => {
-        return this.model.findOne({userId : id})
+        return this.model.find({userId : id})
     }
 }
 

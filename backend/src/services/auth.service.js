@@ -117,7 +117,6 @@ class AuthService {
             delete user.password
             const persona = await this.personaDao.getById(user.idPersona)    
             const usuario = {user, persona}
-            console.log(usuario);
             
             if(!user || !persona) throw new CustomError("User not found", 404)
                 return usuario;

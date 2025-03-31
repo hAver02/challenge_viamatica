@@ -1,25 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {LuLoader} from 'react-icons/lu'
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function LoginPage(){
-    const [email, setEmail] = useState('bdj04113@dcobe.com');
+    const [email, setEmail] = useState('bdj043@dcobe.com');
 	const [password, setPassword] = useState('Abc123');
-    const [error, setError] = useState('')
     const navigate = useNavigate()
     
     const {signin, isAuth} = useAuth();
     const isPending = false;
 	
-	if(isAuth) return navigate("/")
+	useEffect(() => {
+		if(isAuth) navigate("/")
+	}, [isAuth])
     const handleSubmit = async (event:any) => {
         event.preventDefault();
-
         const rta = await signin({email,password})
-        console.log("dta", rta);
-        if(rta.data.ok) return navigate('/')
-        setError(rta.data.message)
+        if(rta == true) return navigate('/')
+		
     }
     return(
         <div className='h-full flex flex-col items-center gap-5 bg-gradient-to-bl from-neutral-200 to-neutral-400 p-5 rounded-xl'>
@@ -41,7 +40,7 @@ export default function LoginPage(){
 				<>
 					<form
 						className='flex flex-col items-center gap-4 w-full mt-10 sm:w-[400px] lg:w-[500px]'
-						// onSubmit={onLogin}
+	
 					>
 						<input
 							type='email'

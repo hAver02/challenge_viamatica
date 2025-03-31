@@ -1,8 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
 // import { TeacherLogin, Teacher } from "../types";
 import Cookies from "js-cookie";
-import { loginReq, registerReq, verify } from "../api/request";
+import { loginReq, logout, registerReq, verify } from "../api/request";
 import { UserRegister } from "../types/UserRegister";
+import toast from "react-hot-toast";
+
 
 export const AuthContext = createContext({})
 
@@ -17,7 +19,7 @@ export function AuthProvider({children} : any){
     const [user, setUser] = useState([])
     const [isAuth, setIsAuth] = useState(false)
     const [loading, setLoading] = useState(true)
-
+    
     const signup = async (user : UserRegister) =>{
         const {apellido, documento, email, fechaNacimiento, nombre, password, username} = user;
         if(!apellido ||  !documento || ! email || !fechaNacimiento || !nombre || !password ||  !username){
@@ -36,11 +38,13 @@ export function AuthProvider({children} : any){
         try {
             
             const rta = await loginReq(user)
-            console.log(rta);
-            if(!rta.data.ok) return false
+            if(!rta.data.ok){
+                toast.error(rta.data.message)
+                return false;
+            }
             setUser(rta?.data?.user)
             setIsAuth(true)
-            return true
+            
  
             
         } catch (error) {
@@ -49,14 +53,23 @@ export function AuthProvider({children} : any){
         }
     }
     
+    async function logoutSession (){
+        try {
+
+            const rta = await logout();
+            setIsAuth(false)
+            setUser([])
+            
+        } catch (error) {
+            
+        }
+    }
 
     async function verifyToken(){
         try {
             setLoading(true)
 
             const {authToken} = Cookies.get()
-    
-            
             if(!authToken) return setIsAuth(false)
             const rta = await verify()
             
@@ -78,12 +91,13 @@ export function AuthProvider({children} : any){
 
 
     }
+    
     useEffect( () => {
         verifyToken()
     }, [])
 
     return (
-        <AuthContext.Provider value={{user, signin, signup, isAuth, loading}}>
+        <AuthContext.Provider value={{user, signin, signup, isAuth, loading, logoutSession}}>
             {children}
         </AuthContext.Provider>
     )

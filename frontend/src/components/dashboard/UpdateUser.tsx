@@ -4,9 +4,10 @@ import { updatePersona, updateUser } from "../../api/request";
 
 
 interface Types {
-  user : UserToUpdate | undefined
+  user : UserToUpdate | undefined,
+  setUpdateUser : (bool : boolean) => void
 }
-export default function UpdateUser({user} : Types){
+export default function UpdateUser({user, setUpdateUser} : Types){
     if(!user) return;
     
     const [formData, setFormData] = useState<UserToUpdate>(user);
@@ -30,20 +31,16 @@ export default function UpdateUser({user} : Types){
         try {
             if(formData.nombre != user.nombre || formData.apellido != user.apellido  ){ 
                 const rta = await updatePersona(user.idPersona, {nombre : formData.nombre, apellido : formData.apellido});
-                console.log(rta);
-                
-                //notificar  al usuario
+                if(!rta.data.ok) return;
             }
-            // update user
-           const rta2 =  await updateUser(user.idUser, {
+            const rta2 =  await updateUser(user.idUser, {
             failedAttempts : formData.failedAttempts,
               status : formData.status,
               sessionActive : formData.sessionActive,
             })  
-            console.log(rta2);
             
         } catch (error) {
-            // notificar!
+          
         }
     };
   
@@ -120,7 +117,7 @@ export default function UpdateUser({user} : Types){
           <button type="submit" className="w-full p-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition">
             Actualizar
           </button>
-          <button className="w-full p-3 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600 transition">
+          <button type="button" onClick={() => setUpdateUser(false)} className="w-full p-3 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600 transition">
               Cancelar
           </button>
         </form>
