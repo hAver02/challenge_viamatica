@@ -46,7 +46,7 @@ class PersonaService {
     update = async (id, persona) => {
         try{
             const rta =  await this.dao.update(id,persona)
-            console.log("rta", rta);
+    
             if(!rta){ 
                 throw new CustomError("Product not found", 404);
             }

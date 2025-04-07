@@ -22,7 +22,7 @@ const UsuarioSchema = new mongoose.Schema({
     },
     sessionActive: { 
       type: Boolean, 
-      default: false 
+      default: true 
     }, 
     status: { 
       type: String, 

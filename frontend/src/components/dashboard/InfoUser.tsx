@@ -4,13 +4,16 @@ import toast from "react-hot-toast";
 
 export default function InfoUser({userId} : {userId : string}){
 
+    
     const [sessions, setSessions] = useState([])
     const [failed, setFailed] = useState<any>([])
     useEffect(() => {
+ 
+        
         if(!userId) return
         const getData = async () => {
             const rta = await getSessionsByUserId(userId);
-            console.log(rta);
+
             
             if(!rta.data.ok) return toast.error("Problem getting sessions");
             setSessions(rta.data.sessions);
@@ -22,8 +25,7 @@ export default function InfoUser({userId} : {userId : string}){
 
         }
         getData()
-    }, [])
-
+    }, [userId])
     return (
         <div className="w-full flex flex-col gap-3 overflow-y-auto">
             <h1 className="text-xl text-blue-500 font-semibold text-center">Informacion del usuario</h1>

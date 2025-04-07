@@ -15,6 +15,7 @@ export const getSessionsByUserId = (userId : string) => instance.get(`session/${
 export const updateUsername = (userId : string , username : string) => instance.put(`usuarios/${userId}/username`, {username});
 export const getUsuarios = () => instance.get("usuarios");
 export const updateUser = (userId : string, user : any) => instance.put(`usuarios/${userId}`, user)
+export const getUserById = (userId : string) => instance.get(`usuarios/${userId}`)
 
 //perosnas
 export const updatePersona = (personaId : string, persona : any) => instance.put(`personas/${personaId}`, persona)

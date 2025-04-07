@@ -20,7 +20,7 @@ class AuthController{
                 maxAge : 3600000
             })
 
-            res.json({ ok : true, message: "logged succesfully!"})
+            res.json({ ok : true, message: "logged succesfully!", user_id : usuario._id})
         } catch (error) {
             return res.json( { ok : false, message : error.message})
             
@@ -43,18 +43,24 @@ class AuthController{
     }
 
     register = async (req, res, next) => {
-        
         try {
                     const { persona, usuario } = req.body;
-                    // console.log({persona,usuario});
                     if(!persona || !usuario) return res.json({ ok : false, message : "Not info sent"})
                     
-                    const newUser = await authService.register(persona, usuario );
-                    res.status(200).json ( { ok : true, user : newUser})
+                    const  {usuario : newUser, session} = await authService.register(persona, usuario );
+            
+                    const token = jwt.sign({userId : newUser._id, role : newUser.role, sessionId : session._id}, process.env.JWT_SECRET , {expiresIn : "1h"})
+
+                    res.cookie("authToken", token, {
+                        maxAge : 3600000
+                    })
+                    res.json({ ok : true, message: "Register succesfully!", user_id : newUser._id, user_email : newUser.email})
+                    // res.status(200).json ( { ok : true, user : newUser})
         } catch (error) {
             next(error)
         }
     }
+
     verify = async (req, res, next) => {
         const {authToken} = req.cookies
         // console.log(authToken);

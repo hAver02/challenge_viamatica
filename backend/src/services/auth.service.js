@@ -5,6 +5,7 @@ import { usuarioDao } from "../dao/collections/usuario.dao.js";
 import CustomError from "../utils/custom.error.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken"
+import { generateEmail } from "../utils/generateEmail.js";
 
 class AuthService {
     constructor(userDao, personaDao, sessionDao, failedDao){
@@ -15,48 +16,57 @@ class AuthService {
     }
 
     register = async (personaData, usuarioData) => {
-        //crear funcion!
-            const {nombre, apellido, documento, fechaNacimiento} = personaData;
-            if(!nombre ||  !apellido || !documento || !fechaNacimiento) throw new CustomError("wrong person information sent",404);
-           
-            const {password, email, username, role }=  usuarioData
-            if(!password || !email || !username) throw new CustomError("wrong user information sent",404);
+        try {
+               const {nombre, apellido, documento, fechaNacimiento} = personaData;
+               if(!nombre ||  !apellido || !documento || !fechaNacimiento) throw new CustomError("wrong person information sent",404);
+              
+               const {password, username, role }=  usuarioData
+               if(!password  || !username) throw new CustomError("wrong user information sent",404);
+   
+               let persona = await this.personaDao.findByDocument(documento);        
     
-            let persona = await this.personaDao.findByDocument( documento);
-            // console.log("persona auth service", persona);
+               if (persona) throw new CustomError( "Already exist one accoun with this document!",400)
             
-            if (persona) throw new CustomError(400, "Already exist one accoun with this document!")
-    
+               const user = await this.userDao.findUserByUsername(usuarioData.username);
+               if(user)throw new CustomError("Already exist one accoun with this email or username!",400)
+             
+       
+               const email = await generateEmail(nombre, apellido, documento)
             
-            const user = await this.userDao.findUserByUsernameOrEmail(usuarioData.username, usuarioData.email);
-            if(user)throw new CustomError("Already exist one accoun with this email or username!",400)
-    
-            const newPersona = await this.personaDao.create(personaData);
-            // console.log("auth service, new persona", newPersona);
-            
-            const hashedPassword = await bcrypt.hash(usuarioData.password, 10);
-          
-            // Crear usuario con referencia a la persona
-            const usuario = await this.userDao.create({
-              idPersona: newPersona._id,
-              username: usuarioData.username,
-              email: usuarioData.email,
-              password: hashedPassword,
-              role: usuarioData.role || "user",
-            });
-          
-            return usuario;
+              
+               const newPersona = await this.personaDao.create(personaData);
+
+               const hashedPassword = await bcrypt.hash(usuarioData.password, 10);
+         
+               const usuario = await this.userDao.create({
+                 idPersona: newPersona._id,
+                 username: usuarioData.username,
+                 email: email.toLocaleLowerCase(), 
+                 password: hashedPassword,
+                 role: usuarioData.role || "user",
+               });
+
+               
+               const session = await this.sessionDao.create({userId : usuario._id.toString()});
+               return {usuario, session};
+            } catch (error) {          
+                throw error
+            }
 
     }
     login = async ({username, email, password }) => {
         try {
-                let usuario = await this.userDao.findUserByUsernameOrEmail(username,email)
-                
-                if(!usuario) throw new CustomError("User not found", 404)
-            
-                if(usuario.status == "blocked") throw new CustomError("Blocked user", 403);
+                let usuario = await this.userDao.findUserByEmailOrUsername(username,email)
 
-                // sessiones que sean de este usuario y que en el end este en null
+                if(!usuario) throw new CustomError("User not found", 404)
+    
+                if(usuario.status == "blocked") throw new CustomError("Blocked user", 403);
+                
+                if(usuario.failedAttemps >=3) {
+                    await this.userDao.updateStatus(usuario._id, 'blocked');
+                    throw new CustomError("Your account has been blocked" , 403)
+                }
+                // sessiones que sean de ese usuario y que en elend este en nullj
                 const currentTime = new Date();
                 const cookieExpirationTime = 3600000
                 const sessiones = await this.sessionDao.getSessionByUserIdAndWithEndNull(usuario._id);
@@ -70,13 +80,15 @@ class AuthService {
                 }
 
                 if(usuario.sessionActive) throw new CustomError("Already have one active session", 400)
-                        
-                 const isValidPassword = await bcrypt.compare(password, usuario.password) 
-                console.log("isValid" , isValidPassword);
+                 const isValidPassword = await bcrypt.compare(password,usuario.password) 
+
                 
                 if(!isValidPassword) {
-                    await this.failedDao.create({userId : usuario._id, date : new Date()})
-                    usuario = await this.userDao.updateFailedAttemps(usuario._id, usuario.failedAttemps);
+                    await this.failedDao.create({userId : usuario._id, date : new Date()})             
+                    usuario = await this.userDao.updateFailed(usuario._id, usuario.failedAttempts +1);
+                    if(usuario.failedAttempts > 3){
+                        await this.userDao.updateStatus(usuario._id, 'blocked');
+                    }
                     throw new CustomError("Invalid password" , 401)
                 }
             
