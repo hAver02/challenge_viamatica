@@ -1,6 +1,7 @@
 
 import jwt from "jsonwebtoken"
 import { authService } from "../services/auth.service.js";
+import { maxAge } from "../constantes/timeJWT.js";
 class AuthController{
     constructor(authService){
         this.authService = authService;
@@ -17,7 +18,7 @@ class AuthController{
             const token = jwt.sign({userId : usuario._id, role : usuario.role, sessionId : session._id}, process.env.JWT_SECRET , {expiresIn : "1h"})
 
             res.cookie("authToken", token, {
-                maxAge : 3600000
+                maxAge : maxAge
             })
 
             res.json({ ok : true, message: "logged succesfully!", user_id : usuario._id})
@@ -52,7 +53,7 @@ class AuthController{
                     const token = jwt.sign({userId : newUser._id, role : newUser.role, sessionId : session._id}, process.env.JWT_SECRET , {expiresIn : "1h"})
 
                     res.cookie("authToken", token, {
-                        maxAge : 3600000
+                        maxAge : maxAge
                     })
                     res.json({ ok : true, message: "Register succesfully!", user_id : newUser._id, user_email : newUser.email})
                     // res.status(200).json ( { ok : true, user : newUser})
