@@ -184,11 +184,10 @@ export default function UpdateUser({ user, setUpdateUser }: Types) {
         sessionActive: formData.sessionActive,
       });
    
-      setFormData({...formData, nombre : rta.data.persona.nombre, apellido : rta.data.persona.apellido})
+      // setFormData()
       setIsEditing(false); 
 
     } catch (err) {
-      console.log(err);
       
       setError("Hubo un error al actualizar los datos");
       setIsEditing(false)

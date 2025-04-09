@@ -1,7 +1,11 @@
-const verifyAdmin = (req, res, next) => {
+import { NextFunction, Request, Response } from "express";
+
+const verifyAdmin = (req :Request, res: Response, next : NextFunction) => {
     const data = req.user;
+
+    
     if(!data || data.role != "admin" ) return res.json({ ok : false, message :"unauthorized"})
-    console.log(data);
+
     next();
     
 }

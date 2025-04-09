@@ -1,0 +1,1 @@
+export const maxAgeJwt = 3600000

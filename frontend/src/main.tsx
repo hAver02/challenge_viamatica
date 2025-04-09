@@ -26,10 +26,9 @@ createRoot(document.getElementById('root')!).render(
           </Route>
 
           <Route element={<IsAuth />}>
-            {/* <Route element={<Header />}> */}
+
               <Route path='/' element={<HomePage2 />} />
               <Route path='/dashboard' element={<DashboardPage />}/>
-            {/* </Route> */}
           </Route>
 
         </Routes>

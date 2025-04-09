@@ -24,3 +24,8 @@ export const getPersonaById = (id : string ) => instance.get(`personas/${id}`)
 
 
 export const getIntentosByUserId = (userId : string) => instance.get(`failed/${userId}`)
+
+
+
+//upload csv
+export const uploadCSV = (formData: any) => instance.post("/upload/upload-csv", formData, { headers : { 'Content-Type' : 'multipart/form-data'}})

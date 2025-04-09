@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { usuarioService } from "../services/usuario.service.js";
-import CustomError from "../utils/custom.error.js";
+import { usuarioService } from "../services/usuario.service";
+import CustomError from "../utils/custom.error";
 
 class UsuarioController {
     private service;

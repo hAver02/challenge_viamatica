@@ -1,7 +1,7 @@
 
 import { personaDao } from "../dao/collections/persona.dao";
 import CustomError from "../utils/custom.error";
-import { IPersona } from "../interfaces/persona.js";
+import { IPersona } from "../interfaces/persona";
 import { Types } from "mongoose";
 
 class PersonaService {

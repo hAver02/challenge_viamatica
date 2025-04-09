@@ -21,7 +21,7 @@ export const generateEmail = async (nombre : string,apellido : string,documento 
             
         }
     }
-
+    
     return email+"@mail.com";
 
 }

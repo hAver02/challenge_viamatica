@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import { authService } from "../services/auth.service";
 import { PersonaData, UsuarioData } from "types/authTypes";
+import { maxAgeJwt } from "constants/timeJWT";
 
 
 interface AuthenticatedUser {
@@ -29,8 +30,8 @@ class AuthController {
       );
 
       res.cookie("authToken", token, {
-        maxAge: 3600000,
-        httpOnly: true,
+        maxAge: maxAgeJwt,
+
       });
 
       res.json({ ok: true, message: "Logged successfully!", user_id: usuario._id });
@@ -73,8 +74,8 @@ class AuthController {
       );
 
       res.cookie("authToken", token, {
-        maxAge: 3600000,
-        httpOnly: true,
+        maxAge: maxAgeJwt,
+  
       });
 
       res.json({
@@ -83,8 +84,9 @@ class AuthController {
         user_id: newUser._id,
         user_email: newUser.email,
       });
-    } catch (error) {
-      next(error);
+    } catch (error : any) {
+      res.json( { ok :false, message : error.message})
+      // next(error);
     }
   };
 

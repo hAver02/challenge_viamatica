@@ -6,7 +6,9 @@ const verifyToken = (req: Request, res : Response, next: NextFunction) => {
     const token = req.cookies.authToken;
     if (!token){
         res.status(401).json({ message: "You are not authenticated" });
-    }
+    }else{
+
+    
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET || "")  as UserPayload 
         (req as any).user = decoded
@@ -14,6 +16,7 @@ const verifyToken = (req: Request, res : Response, next: NextFunction) => {
     } catch (err) {
         res.status(401).json({ message: "Invalid token" })
     }
+}   
 };
 
 

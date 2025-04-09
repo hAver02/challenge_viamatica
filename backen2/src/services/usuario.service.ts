@@ -1,7 +1,7 @@
 import { usuarioDao } from "../dao/collections/usuario.dao";
 import CustomError from "../utils/custom.error";
 import { IUsuario } from "../interfaces/usuario";
-import { Types } from "mongoose";
+
 
 class UsuarioService {
   private dao = usuarioDao;

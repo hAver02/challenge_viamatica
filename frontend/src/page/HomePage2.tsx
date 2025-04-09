@@ -56,7 +56,7 @@ export default function HomePage2(){
 
 
                 <div className="w-full h-full flex bg-gradient-to-br from-neutral-500 to-neutral-700 flex-1">
-                      {
+                    {
                         select == "home" ? 
                             <HomeComponents persona={persona} lastSession ={lastSession} usuario={user} />
                           : 
@@ -65,10 +65,10 @@ export default function HomePage2(){
                           <div className="w-full h-full bg-neutral-500">
                             <IntentosFallidos userId={user._id}/>
                           </div>
-                    } 
+                      } 
+               
                       </div>
-                  </div>
-                
+              </div>
         </div>
     )
 }

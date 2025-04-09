@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useState } from "react";
 import { logout } from "../../api/request";
@@ -20,17 +20,21 @@ export default function NavBar({setSelect, select, role, nombre } : any){
         setMenuOpen(false)
         return navigate("/login")
     }
+    const {pathname} = useLocation()
 
+    
     return (
         <div className="py-7 bg-neutral-300 w-full justify-around items-center gap-5 flex shadow-md shadow-neutral-700 relative">
           <h1 className="text-3xl text-blue-500">Bienvenido {nombre}</h1>
-    
-          <div className="flex justify-evenly w-1/2 items-center relative">
+            <div className="flex justify-evenly w-1/2 items-center relative">
+          {
+            pathname != "/dashboard" && 
             <ul className="flex gap-5">
               <li onClick={() => setSelect("home")} className="cursor-pointer">Home</li>
               <li onClick={() => setSelect("ultimas sessiones")} className="cursor-pointer">Últimas sesiones</li>
               <li onClick={() => setSelect("intentos-fallidos")} className="cursor-pointer">Intentos fallidos</li>
             </ul>
+          }
 
             <div className="relative">
               <svg
@@ -46,12 +50,14 @@ export default function NavBar({setSelect, select, role, nombre } : any){
     
               {menuOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg p-4 z-50 flex flex-col gap-2">
+                  {pathname == "/" && 
                   <button
                     onClick={handleUpdate}
                     className="text-left px-4 py-2 hover:bg-blue-100 rounded"
                   >
                     Actualizar tu información
                   </button>
+                  }
                   {role == "admin" && <button className="text-left px-4 py-2 hover:bg-blue-100 rounded" onClick={() => navigate("/dashboard")}>Ir a admin page</button>}
                   <button
                     onClick={handleLogout}

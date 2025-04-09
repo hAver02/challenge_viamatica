@@ -81,7 +81,8 @@ export function RegisterPage2() {
       const userInfo = {password : datos.password, username : datos.username}
         try {
             const rta = await registerReq({persona: personaInfo, usuario: userInfo});
-
+  
+            
             if(rta.data.ok) {
                 setIdUser(rta.data.user_id)
                 setIsAuth(true)
@@ -91,6 +92,7 @@ export function RegisterPage2() {
                 setRegisterError(rta.data.message)
             }
         } catch (error) {
+  
             return setRegisterError("Error created user!")
         }
     };
