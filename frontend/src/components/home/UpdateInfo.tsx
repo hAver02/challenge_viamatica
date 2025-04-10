@@ -62,7 +62,6 @@ export default function UpdateUserInfo({ user } : any) {
       setMessage({ text: error, type: "error" });
       return;
     }
-;
     
     try {
       if(formData.username != user.username ){

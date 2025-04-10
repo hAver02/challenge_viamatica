@@ -29,6 +29,8 @@ export default function HomePage2(){
               console.error("Error al obtener los datos del usuario", error);
             }
           };
+          console.log({isAuth});
+          
           if(!isAuth) navigate("/login")
           fetchSessions();
     }, [user, isAuth]);

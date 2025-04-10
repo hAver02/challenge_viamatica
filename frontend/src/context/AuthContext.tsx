@@ -1,113 +1,8 @@
-// import { createContext, useContext, useEffect, useState } from "react";
-// // import { TeacherLogin, Teacher } from "../types";
-// import Cookies from "js-cookie";
-// import { loginReq, logout, registerReq, verify } from "../api/request";
-// import { UserRegister } from "../types/UserRegister";
-// import toast from "react-hot-toast";
 
-
-// export const AuthContext = createContext({})
-
-// export const useAuth = (): any => {
-//     const context = useContext(AuthContext)
-//     return context
-// }
-
-
-// export function AuthProvider({children} : any){
-
-//     const [user, setUser] = useState([])
-//     const [isAuth, setIsAuth] = useState(false)
-//     const [loading, setLoading] = useState(true)
-    
-//     const signup = async (user : UserRegister) =>{
-//         const {apellido, documento, email, fechaNacimiento, nombre, password, username} = user;
-//         if(!apellido ||  !documento || ! email || !fechaNacimiento || !nombre || !password ||  !username){
-//             return false;
-//         }
-//         const usuario = { password: user.password, username : user.username, email : user.email}
-//         const persona = {nombre : user.nombre, apellido : user.apellido, fechaNacimiento : user.fechaNacimiento, documento : user.documento};
-//         const rta = await registerReq({usuario, persona})
-        
-//         if(!rta.data.ok) return false
-
-//         return rta
-//     }
-
-//     const signin = async (user:any) => {
-//         try {
-            
-//             const rta = await loginReq(user)
-//             if(!rta.data.ok){
-//                 toast.error(rta.data.message)
-//                 return false;
-//             }
-//             setUser(rta?.data?.user)
-//             setIsAuth(true)
-            
- 
-            
-//         } catch (error) {
-//             console.log(error);
-            
-//         }
-//     }
-    
-//     async function logoutSession (){
-//         try {
-
-//             const rta = await logout();
-//             setIsAuth(false)
-//             setUser([])
-            
-//         } catch (error) {
-            
-//         }
-//     }
-
-//     async function verifyToken(){
-//         try {
-//             setLoading(true)
-
-//             const {authToken} = Cookies.get()
-//             if(!authToken) return setIsAuth(false)
-//             const rta = await verify()
-            
-//             if(rta.data.ok && rta.data.usuario){
-//                 setIsAuth(true)
-//                 setUser(rta.data.usuario)
-//             }else{
-//             setIsAuth(false)
-//             }
-
-//         } catch (error) {
-//             setIsAuth(false)
-//             setUser([])
-//         }
-//         finally{
-//             setLoading(false)
-
-//         }
-
-
-//     }
-    
-//     useEffect( () => {
-//         verifyToken()
-//     }, [])
-
-//     return (
-//         <AuthContext.Provider value={{user, signin, signup, isAuth, loading, logoutSession}}>
-//             {children}
-//         </AuthContext.Provider>
-//     )
-// }
-
-
-import {createContext, useContext, useState} from 'react'
-// import {useNavigate} from 'react-router-dom'
-
-
+import {createContext, useContext, useEffect, useState} from 'react'
+import Cookies from "js-cookie";
+import { verify } from '../api/request';
+import { useNavigate } from 'react-router-dom';
 export const useAuth = (): any => {
     const context = useContext(AuthContext)
     return context
@@ -115,15 +10,56 @@ export const useAuth = (): any => {
 export const AuthContext = createContext({})
 
 
+type Role = "user" | "admin";
+
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  role: Role;
+}
+
+
 export function AuthProvider({children} : any){
+    const navigate = useNavigate();
 
     const [idUser, setIdUser ] = useState('')
     const [isLoading, setIsLoading ] = useState(true)
-    const [user, setUser] = useState({})
+    const [user, setUser] = useState<User|null>(null)
 
     const [isAuth, setIsAuth] = useState(false)
     const [refresh, setRefresh] = useState(false)
     const [persona, setPersona] = useState({})
+    useEffect(() => {
+        const checkAuth = async () => {
+          const token = Cookies.get("authToken");
+          
+          if (token) {  
+            try {
+                const res = await verify()
+                
+                if (res.data.ok) {
+                    setIsAuth(true)
+                    setIdUser(res.data.usuario._id);
+                    setUser(res.data.usuario.user)
+                    setPersona(res.data.usuario.persona)
+                    navigate('/dashboard')
+                } 
+                else{
+                    return;
+                }
+            } catch (error) {
+              console.error("Invalid token:", error);
+              Cookies.remove("authToken");
+              setUser(null);
+              setIsAuth(false);
+            }
+          }
+        };
+    
+        checkAuth();
+      }, []);
+    
     return (
         <AuthContext.Provider value={{user, setUser ,setIdUser, 
                                         idUser, isAuth, setIsAuth, isLoading, setIsLoading, refresh, setRefresh, persona, setPersona

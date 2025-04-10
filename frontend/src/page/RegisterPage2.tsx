@@ -101,7 +101,7 @@ export function RegisterPage2() {
     return (
         <div className="flex items-center justify-center w-full h-full">
           <ThemeProvider theme={defaultTheme}>
-            <Grid container component="main" sx={{ height: '100vh' }} className='items-center border-2 border-white bg-neutral-600 rounded-xl '>
+            <Grid container component="main" sx={{ height: '100vh' }} className='items-center border-2 border-white bg-neutral-300 rounded-xl '>
               <CssBaseline />
               <Grid >
                 <Box sx={{ mx: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', }}>

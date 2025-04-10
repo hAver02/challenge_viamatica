@@ -45,7 +45,7 @@ export function LoginPage2() {
             if(rta.data.ok){
                 setIsAuth(true)
                 setIdUser(rta.data.user_id)
-                navigate('/')
+                navigate('/dashboard')
             }else{
                 setLoginError(rta.data.message.toUpperCase())
             }
@@ -57,7 +57,7 @@ export function LoginPage2() {
     <div className='flex items-center justify-center w-full h-full '>
 
     <ThemeProvider theme={defaultTheme}>
-      <Grid container component="main" sx={{ height: '100vh' }} className='items-center border-2 border-white bg-neutral-600 p-20 rounded-xl'>
+      <Grid container component="main" sx={{ height: '100vh' }} className='items-center border-2 border-white bg-neutral-300 p-20 rounded-xl'>
         <CssBaseline />
         <Grid >
           <Box
@@ -74,8 +74,9 @@ export function LoginPage2() {
             <Typography component="h1" variant="h5" className='text-blue-500'>
               Viamatica
             </Typography>
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }} className='text-white'>
               <TextField
+                color="primary"
                 margin="normal"
                 required
                 fullWidth
@@ -84,6 +85,7 @@ export function LoginPage2() {
                 name="email"
                 autoComplete="email"
                 autoFocus
+                
               />
               <TextField
                 margin="normal"
